@@ -230,7 +230,6 @@ public class Entity : MonoBehaviour
     public virtual void Operate()
     {
         isOperating = true;
-        Debug.Log("启用");
         operatingCursor.SetActive(true);
     }
 
