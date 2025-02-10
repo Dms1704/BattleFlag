@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3852715292588088763}
   - component: {fileID: 590665268324026348}
   m_Layer: 7
-  m_Name: HexMask_Small
+  m_Name: SmallHexMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

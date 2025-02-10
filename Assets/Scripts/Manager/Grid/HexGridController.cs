@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -11,12 +12,15 @@ public class HexGridController : MonoBehaviour
     public HexTerrainTile[] terrainTiles; // 预配置的地形Tile
     
     public GameObject hexMaskPrefab;
-    
-    private void Start()
+
+    private void Awake()
     {
         _tilemap = GetComponentInChildren<Tilemap>();
         TilemapSingleton.instance.SetTilemap(_tilemap);
-        
+    }
+
+    private void Start()
+    {
         hexMaskPrefab = Instantiate(hexMaskPrefab);
         hexMaskPrefab.SetActive(false);
         

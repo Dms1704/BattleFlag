@@ -18,6 +18,11 @@ public class HexGridUtil
         return new Vector3Int(cell.x, cell.y, -cell.x-cell.y);
     }
 
+    public static Vector3Int IgnoreZ(Vector3Int pos)
+    {
+        return new Vector3Int(-pos.x, pos.y, 0);
+    }
+
     /**
      * 六边形偏移坐标转换为轴坐标
      */
@@ -94,9 +99,9 @@ public class HexGridUtil
     #endregion
 
     #region 范围
-    public static IList<Vector3> FindScope(int scope)
+    public static IList<Vector3Int> FindScope(int scope)
     {
-        IList<Vector3> allVecs = new List<Vector3>();
+        IList<Vector3Int> allVecs = new List<Vector3Int>();
         for (int i = -scope; i <= scope; i++)
         {
             for (int j = -scope; j <= scope; j++)
@@ -109,7 +114,7 @@ public class HexGridUtil
                     }
                     if (i + j + k == 0)
                     {
-                        allVecs.Add(GetCellCenter(new Vector3Int(i, j, k)));
+                        allVecs.Add(new Vector3Int(i, j, k));
                     }
                 }
             }

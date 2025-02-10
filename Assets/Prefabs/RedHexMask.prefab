@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2888986683550098231}
   - component: {fileID: 3758563658799792318}
   m_Layer: 7
-  m_Name: HexMask_Red
+  m_Name: RedHexMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

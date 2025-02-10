@@ -17,6 +17,8 @@ namespace States
         {
             base.Enter();
 
+            BoardManager.instance.RemoveEntityPosition(entity.GetGridPosition());
+
             entity.StartCoroutine(entity.MoveSequentially(moveSteps, () =>
             {
                 stateMachine.ChangeState(entity.idleState);
@@ -36,7 +38,9 @@ namespace States
         {
             base.Exit();
             
+            entity.ClearMoveSteps();
             entity.ClearFootprints();
+            BoardManager.instance.UpdateEntityPosition(entity.GetGridPosition(), entity);
         }
 
         public void SetMoveStepLOs(IList<MoveStepLO> moveSteps)

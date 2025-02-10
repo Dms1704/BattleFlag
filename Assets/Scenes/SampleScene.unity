@@ -656,7 +656,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1766420051
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 694589328, guid: bbaeeed9a7da6044ba133027576c81a8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -747,7 +747,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b160c15a82f6d846a65968b15486675, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smallHexMaskPrefab: {fileID: 0}
+  smallHexMaskPrefab: {fileID: 3993439337929526280, guid: d2a6edcffb94f4940a627b18ed36d70a, type: 3}
+  redHexMaskPrefab: {fileID: 7767232778237592146, guid: e5f55939d6491074f80cc99b8a475b44, type: 3}
 --- !u!1 &1046774777
 GameObject:
   m_ObjectHideFlags: 0
@@ -4096,7 +4097,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1371695535
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: -1082981018, guid: 127284b466efcfa489a255ab009bd30b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

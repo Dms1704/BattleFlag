@@ -11,21 +11,24 @@ public class Player : Entity
 
     // 组件
     private Camera camera;
+    private BoardManager board;
     
     // 常量
     private static readonly float defaultFootprintAngle = -60;
 
     // 数据
+    private bool attackReady = false;
     private IList<GameObject> footprints = new List<GameObject>();
     private Vector3Int currentMoveToCell;
-    private IList<MoveStepLO> moveStepLos;
-    private IList<Skill> skills;
+    private SkillManager skillManager;
     
     protected override void Start()
     {
         base.Start();
-
         camera = Camera.main;
+        board = BoardManager.instance;
+        skillManager = SkillManager.instance;
+
         TurnOrderManager.instance.StartTurn();
     }
 
@@ -38,43 +41,76 @@ public class Player : Entity
             // 移动判定
             if (Input.GetKeyDown(KeyCode.Mouse0) && !isBusy)
             {
-                MoveLogic();
+                // 技能键按下
+                if (attackReady)
+                {
+                    Vector3 screenToWorldPoint = camera.ScreenToWorldPoint(Input.mousePosition);
+                    Entity entity = board.GetEntity(HexGridUtil.IgnoreZ(tilemap.WorldToCell(screenToWorldPoint)));
+                    if (entity != null)
+                    {
+                        UseSkill(entity);
+                    }
+                }
+                else
+                {
+                    MoveLogic();
+                }
             }
-            // 攻击
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetMouseButtonDown(1) && !isBusy)
             {
-                stateMachine.ChangeState(attackState);
-                StartCoroutine(nameof(BusyFor), .2f);
-                OperateOver();
+                ClearFootprints();
+                board.ClearHexMasks();
+                attackReady = false;
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (Input.GetKeyDown(KeyCode.Alpha1) && !isBusy)
             {
-                
+                ClearFootprints();
+                Skill skill = skillManager.GetSkill(SkillType.Melee);
+                if (!attackReady)
+                {
+                    board.GenerateAttackHexMasks(transform, skill.scope);
+                    attackReady = true;
+                }
             }
         }
+    }
+
+    private void UseSkill(Entity entity)
+    {
+        Skill skill = skillManager.GetSkill(SkillType.Melee);
+        if (entity is Enemy)
+        {
+            skill.UseSkill(entity);
+            stateMachine.ChangeState(attackState);
+            StartCoroutine(nameof(BusyFor), .2f);
+        }
+
+        attackReady = false;
+        board.ClearHexMasks();
     }
 
     private void MoveLogic()
     {
         // 第二次点击相同位置：移动
-        Vector3Int clickCell = tilemap.WorldToCell(camera.ScreenToWorldPoint(Input.mousePosition));
+        Vector3Int clickCell = GetMouseInputCell();
         if (clickCell.Equals(currentMoveToCell))
         {
             Move();
+            currentMoveToCell = new Vector3Int(Int32.MaxValue, 0, 0);
             return;
         }
-                
+
         // 第一次点击：生成脚印+移动距离判定：基于角色的行动点
+        currentMoveToCell = GetMouseInputCell();
         ClearFootprints();
-        currentMoveToCell = tilemap.WorldToCell(camera.ScreenToWorldPoint(Input.mousePosition));
-                
+
         IGrid grid = HexGridUtil.GenerateGrid();
         CellPath path = HexGridUtil.FindPath(transform, grid);
-        IList<Step> steps = path.Steps;
-        moveStepLos = new List<MoveStepLO>();
                 
-        if (steps.Count > 0)
+        if (path != null)
         {
+            IList<Step> steps = path.Steps;
+            moveStepLos = new List<MoveStepLO>();
             int actionPoint = stats.GetStat(StatType.actionPoint).GetValue();
             for (int i = 0; i < steps.Count && actionPoint > 1; i++)
             {
@@ -96,6 +132,11 @@ public class Player : Entity
                 }
             }
         }
+    }
+
+    private Vector3Int GetMouseInputCell()
+    {
+        return HexGridUtil.IgnoreZ(tilemap.WorldToCell(camera.ScreenToWorldPoint(Input.mousePosition)));
     }
 
     private void Move()

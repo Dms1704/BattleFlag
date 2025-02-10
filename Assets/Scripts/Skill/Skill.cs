@@ -1,26 +1,34 @@
 using UnityEngine;
 
-public class Skill : MonoBehaviour
+public class Skill
 {
-    public float cooldown;
-    protected float cooldownTimer;
-    
-    protected virtual void Update()
+    public int scope = 1;
+    public int cost = 4;
+
+    protected Entity _entity;
+
+    public Skill()
     {
-        cooldownTimer -= Time.deltaTime;
+    }
+
+    public Skill(Entity entity)
+    {
+        _entity = entity;
     }
 
     public virtual bool CanUseSkill()
     {
-        return cooldownTimer < 0;
+        return true;
     }
 
-    public virtual void UseSkill()
+    public virtual void UseSkill(Entity entity)
     {
-        if (CanUseSkill())
+        if (!CanUseSkill())
         {
-            UseSkill();
-            cooldownTimer = cooldown;
+            Debug.Log("技能冷却中");
+            return;
         }
+        
+        entity.CostActionPoint(cost);
     }
 }

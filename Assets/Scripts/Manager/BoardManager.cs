@@ -7,6 +7,7 @@ public class BoardManager : MonoBehaviour
 {
     // 预制体
     public GameObject smallHexMaskPrefab;
+    public GameObject redHexMaskPrefab;
     
     // 组件
     public static BoardManager instance;
@@ -15,7 +16,9 @@ public class BoardManager : MonoBehaviour
     // 数据
     public Dictionary<Vector3Int, HexTerrainTile> tileDic { get; set; }
     private IList<Entity> entities = new List<Entity>();
+    private Dictionary<Vector3Int, Entity> entitiesDic = new();
     private IList<GameObject> smallHexMasks = new List<GameObject>();
+    private IList<GameObject> redHexMasks = new List<GameObject>();
     
     void Awake()
     {
@@ -34,18 +37,46 @@ public class BoardManager : MonoBehaviour
         tilemap = TilemapSingleton.instance.tilemap;
     }
 
-    public void ClearSmallHexMasks()
+    public void ClearHexMasks()
     {
+        for (int i = 0; i < smallHexMasks.Count; i++)
+        {
+            Destroy(smallHexMasks[i]);
+        }
         smallHexMasks.Clear();
+        for (int i = 0; i < redHexMasks.Count; i++)
+        {
+            Destroy(redHexMasks[i]);
+        }
+        redHexMasks.Clear();
     }
 
-    public void GenerateSmallHexMasks(Transform transform, int scope)
+    public void GenerateAttackHexMasks(Transform transform, int scope)
     {
-        IList<Vector3> list = HexGridUtil.FindScope(scope);
+        ClearHexMasks();
+
+        IList<Vector3Int> list = HexGridUtil.FindScope(scope);
         for (int i = 0; i < list.Count; i++)
         {
-            GameObject smallHexMask = Instantiate(smallHexMaskPrefab);
-            smallHexMask.transform.position = transform.TransformPoint(list[i]);
+            Vector3 cellCenter = transform.TransformPoint(HexGridUtil.GetCellCenter(list[i]));
+            Vector3Int tilePos = tilemap.WorldToCell(cellCenter);
+
+            if (entitiesDic.TryGetValue(tilePos, out _))
+            {
+                GameObject redHexMask = Instantiate(redHexMaskPrefab);
+                redHexMask.transform.position = cellCenter;
+                redHexMasks.Add(redHexMask);
+            }
+            else
+            {
+                if (scope == 1)
+                {
+                    continue;
+                }
+                GameObject smallHexMask = Instantiate(smallHexMaskPrefab);
+                smallHexMask.transform.position = cellCenter;
+                smallHexMasks.Add(smallHexMask);
+            }
         }
     }
 
@@ -54,9 +85,30 @@ public class BoardManager : MonoBehaviour
         return tileDic.GetValueOrDefault(position);
     }
 
+    public Dictionary<Vector3Int, Entity> GetEntitiesDic()
+    {
+        return entitiesDic;
+    }
+
+    public Entity GetEntity(Vector3Int position)
+    {
+        return entitiesDic.GetValueOrDefault(position);
+    }
+
+    public void RemoveEntityPosition(Vector3Int position)
+    {
+        entitiesDic.Remove(position);
+    }
+
+    public void UpdateEntityPosition(Vector3Int position, Entity entity)
+    {
+        entitiesDic.Add(position, entity);
+    }
+
     public void AddEntity(Entity entity)
     {
         this.entities.Add(entity);
+        entitiesDic.Add(tilemap.WorldToCell(entity.transform.position), entity);
     }
 
     public void RemoveEntity(Entity entity)

@@ -8,37 +8,33 @@ using UnityEngine.Tilemaps;
 
 public class Entity : MonoBehaviour
 {
+    // Unity数据
     [SerializeField] protected Vector2 knockbackDirection;
     [SerializeField] protected float knockbackDuration;
     
     [Header("移动速度")]
     [SerializeField] protected float moveSpeed;
 
+    // 数据
     protected bool isKnocked;
     protected bool isBusy;
     public bool isOperating;
-
-    //朝向
     public int facingDir { get; private set; } = 1;
     protected bool facingRight = true;
-    
-    public Action onFliped;
-    public Action onOperate;
-    /**
-     * 操作完成后执行的事件
-     */
-    public event Action OnOperateOverChanged;
-
     public string lastAnimBoolName { get; private set; }
+    protected IList<MoveStepLO> moveStepLos;
     
-    #region 状态
+    // 事件
+    public Action onFliped;
+    public event Action OnOperateOverChanged;
+    
+    // 状态
     protected EntityStateMachine stateMachine { get; private set; }
     public EntityIdleState idleState { get; private set; }
     public EntityMoveState moveState { get; private set; }
     public EntityAttackState attackState { get; private set; }
-    #endregion
 
-    #region 组件
+    // 组件
     public Animator animator { get; private set; }
     public Rigidbody2D rb { get; private set; }
     public EntityFX fx { get; private set; }
@@ -47,7 +43,6 @@ public class Entity : MonoBehaviour
     public CapsuleCollider2D cd { get; private set; }
     public Tilemap tilemap { get; private set; }
     public GameObject operatingCursor;
-    #endregion
 
     public virtual void AssignLastAnimName(string lastAnimBoolName)
     {
@@ -75,6 +70,16 @@ public class Entity : MonoBehaviour
         BoardManager.instance.AddEntity(this);
         
         stateMachine.Initialize(idleState);
+    }
+
+    public void ClearMoveSteps()
+    {
+        moveStepLos.Clear();
+    }
+
+    public void CostActionPoint(int cost)
+    {
+        stats.actionPoint.AddModifier(-cost);
     }
 
     protected virtual void Update()
@@ -248,6 +253,6 @@ public class Entity : MonoBehaviour
 
     public Vector3Int GetGridPosition()
     {
-        return tilemap.WorldToCell(transform.position);
+        return HexGridUtil.IgnoreZ(tilemap.WorldToCell(transform.position));
     }
 }

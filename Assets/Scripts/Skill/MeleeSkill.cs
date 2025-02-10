@@ -1,14 +1,21 @@
-using UnityEngine;
-
 /**
  * 近战攻击
  */
 public class MeleeSkill : Skill
 {
-    public override void UseSkill()
+    private Entity entity;
+
+    public MeleeSkill(Entity entity) : base(entity)
     {
-        base.UseSkill();
-        
-        // 
+        this.entity = entity;
+    }
+
+    public MeleeSkill()
+    {
+    }
+
+    public override void UseSkill(Entity entity)
+    {
+        base.UseSkill(entity);
     }
 }
