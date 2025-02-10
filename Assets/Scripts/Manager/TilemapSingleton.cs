@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class SingletonManager : MonoBehaviour
+public class TilemapSingleton : MonoBehaviour
 {
-    public static SingletonManager instance;
+    public static TilemapSingleton instance;
 
     public Tilemap tilemap;
 

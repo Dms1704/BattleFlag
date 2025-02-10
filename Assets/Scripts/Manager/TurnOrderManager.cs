@@ -5,7 +5,6 @@ using UnityEngine;
 public class TurnOrderManager : MonoBehaviour
 {
     public static TurnOrderManager instance;
-    private List<Entity> entityList = new();
     private List<Entity> sortedEntityList;
 
     // 当前操作的角色下标
@@ -25,12 +24,6 @@ public class TurnOrderManager : MonoBehaviour
             Destroy(gameObject); // 确保只有一个实例
         }
     }
-
-    // 添加角色到行动队列
-    public void AddEntity(Entity entity)
-    {
-        entityList.Add(entity);
-    }
     
     public void EndOperate()
     {
@@ -44,7 +37,7 @@ public class TurnOrderManager : MonoBehaviour
 
     public void StartNextOperate()
     {
-        if (index >= entityList.Count)
+        if (index >= sortedEntityList.Count)
         {
             StartTurn();
             return;
@@ -63,7 +56,7 @@ public class TurnOrderManager : MonoBehaviour
         index = 0;
         
         // 根据速度排序角色列表
-        sortedEntityList = entityList.OrderByDescending(e => e.stats.velocity.GetValue()).ToList();
+        sortedEntityList = BoardManager.instance.GetEntities().OrderByDescending(e => e.stats.velocity.GetValue()).ToList();
         StartNextOperate();
     }
 }

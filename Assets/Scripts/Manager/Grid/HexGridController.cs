@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -15,12 +15,23 @@ public class HexGridController : MonoBehaviour
     private void Start()
     {
         _tilemap = GetComponentInChildren<Tilemap>();
-        SingletonManager.instance.SetTilemap(_tilemap);
+        TilemapSingleton.instance.SetTilemap(_tilemap);
         
         hexMaskPrefab = Instantiate(hexMaskPrefab);
         hexMaskPrefab.SetActive(false);
         
         // GenerateTiles();
+        Dictionary<Vector3Int, HexTerrainTile> tileMap = new Dictionary<Vector3Int, HexTerrainTile>();
+        for (int i = -xRadius; i <= xRadius; i++)
+        {
+            for (int j = -yRadius; j <= yRadius; j++)
+            {
+                Vector3Int cellPos = new Vector3Int(i, j, 0);
+                HexTerrainTile tile = _tilemap.GetTile<HexTerrainTile>(cellPos);
+                tileMap.Add(new Vector3Int(i, j, -i-j), tile);
+            }
+        }
+        BoardManager.instance.tileDic = tileMap;
     }
 
     private void Update()
@@ -56,7 +67,7 @@ public class HexGridController : MonoBehaviour
     */
     private void UpdateHexMask(Vector3Int cellPos)
     {
-        TileBase tile = _tilemap.GetTile(new Vector3Int(cellPos.x, cellPos.y, 0));
+        TileBase tile = BoardManager.instance.FindTile(new Vector3Int(cellPos.x, cellPos.y, -cellPos.x-cellPos.y));
         Vector3 center = _tilemap.CellToWorld(cellPos);
         if (tile != null)
         {
@@ -68,11 +79,4 @@ public class HexGridController : MonoBehaviour
             hexMaskPrefab.SetActive(false); // 可根据需要显示/隐藏
         }
     }
-    
-    // public Vector3 CellToWorld(Cell h)
-    // {
-    //     double x = 3.0 / 2.0 * h.x * qSize;
-    //     double y = (Math.Sqrt(3.0) / 2.0 * h.x + Math.Sqrt(3.0) * h.y) * rSize;
-    //     return new Vector3((float)x, (float)y);
-    // }
 }

@@ -6,22 +6,26 @@ using UnityEngine;
 
 public class Player : Entity
 {
+    // 预制体
     public GameObject footprintPrefab;
 
-    private static readonly float defaultFootprintAngle = -60;
+    // 组件
     private Camera camera;
+    
+    // 常量
+    private static readonly float defaultFootprintAngle = -60;
 
-    // 全局控制变量
+    // 数据
     private IList<GameObject> footprints = new List<GameObject>();
     private Vector3Int currentMoveToCell;
     private IList<MoveStepLO> moveStepLos;
+    private IList<Skill> skills;
     
     protected override void Start()
     {
         base.Start();
 
         camera = Camera.main;
-
         TurnOrderManager.instance.StartTurn();
     }
 
@@ -42,6 +46,10 @@ public class Player : Entity
                 stateMachine.ChangeState(attackState);
                 StartCoroutine(nameof(BusyFor), .2f);
                 OperateOver();
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                
             }
         }
     }

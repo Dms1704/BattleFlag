@@ -70,9 +70,9 @@ public class Entity : MonoBehaviour
         sr = GetComponentInChildren<SpriteRenderer>();
         stats = GetComponent<CharacterStats>();
         cd = GetComponent<CapsuleCollider2D>();
-        tilemap = SingletonManager.instance.tilemap;
+        tilemap = TilemapSingleton.instance.tilemap;
         
-        TurnOrderManager.instance.AddEntity(this);
+        BoardManager.instance.AddEntity(this);
         
         stateMachine.Initialize(idleState);
     }
@@ -244,5 +244,10 @@ public class Entity : MonoBehaviour
     public virtual void ClearFootprints()
     {
         
+    }
+
+    public Vector3Int GetGridPosition()
+    {
+        return tilemap.WorldToCell(transform.position);
     }
 }

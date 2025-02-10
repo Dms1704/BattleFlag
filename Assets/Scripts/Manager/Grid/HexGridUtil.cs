@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sylves;
@@ -5,9 +6,11 @@ using UnityEngine;
 
 public class HexGridUtil
 {
+    private static HexGrid grid = new HexGrid(new Vector2(1, 0.519586f), HexOrientation.FlatTopped);
+    
     public static Cell Vector3ToCell(Vector3Int pos)
     {
-        return new Cell(pos.x, pos.y);
+        return new Cell(pos.x, pos.y, pos.z);
     }
     
     public static Vector3Int CellToVectorInt(Cell cell)
@@ -35,18 +38,17 @@ public class HexGridUtil
         return new Vector3Int(x, y);
     }
     
-    public static CellPath FindPath0(Transform srcTransform)
-    {
-        IGrid grid = new HexGrid(new Vector2(1, 0.519586f), HexOrientation.FlatTopped);
-
-        return FindPath(srcTransform, grid);
-    }
-
     public static IGrid GenerateGrid()
     {
         return new HexGrid(new Vector2(1, 0.519586f), HexOrientation.FlatTopped);
     }
 
+    public static Vector3 GetCellCenter(Vector3Int cell)
+    {
+        return grid.GetCellCenter(Vector3ToCell(cell));
+    }
+    
+    #region 寻路
     public static CellPath FindPath(Transform srcTransform, IGrid grid)
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -89,4 +91,31 @@ public class HexGridUtil
 
         return targetPoses;
     }
+    #endregion
+
+    #region 范围
+    public static IList<Vector3> FindScope(int scope)
+    {
+        IList<Vector3> allVecs = new List<Vector3>();
+        for (int i = -scope; i <= scope; i++)
+        {
+            for (int j = -scope; j <= scope; j++)
+            {
+                for (int k = -scope; k <= scope; k++)
+                {
+                    if (i == 0 && j == 0 && k == 0)
+                    {
+                        continue;
+                    }
+                    if (i + j + k == 0)
+                    {
+                        allVecs.Add(GetCellCenter(new Vector3Int(i, j, k)));
+                    }
+                }
+            }
+        }
+       
+        return allVecs;
+    }
+    #endregion
 }
