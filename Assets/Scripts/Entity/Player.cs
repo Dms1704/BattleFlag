@@ -104,8 +104,7 @@ public class Player : Entity
         currentMoveToCell = GetMouseInputCell();
         ClearFootprints();
 
-        IGrid grid = HexGridUtil.GenerateGrid();
-        CellPath path = HexGridUtil.FindPath(transform, grid);
+        CellPath path = HexGridUtil.FindPath(transform);
                 
         if (path != null)
         {
@@ -116,9 +115,9 @@ public class Player : Entity
             {
                 // 基于行动点判断角色能够走到哪
                 Step step = steps[i];
-                Vector3Int cellPos = tilemap.WorldToCell(grid.GetCellCenter(step.Dest));
+                Vector3Int cellPos = tilemap.WorldToCell(HexGridUtil.GetCellCenter(step.Dest));
                 HexTerrainTile tile = tilemap.GetTile<HexTerrainTile>(cellPos);
-                Vector3 end = transform.TransformPoint(grid.GetCellCenter(step.Dest));
+                Vector3 end = transform.TransformPoint(HexGridUtil.GetCellCenter(step.Dest));
                 GenerateFootprints(step, end);
 
                 if (tile != null)
