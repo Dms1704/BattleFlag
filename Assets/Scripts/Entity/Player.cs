@@ -28,8 +28,6 @@ public class Player : Entity
         camera = Camera.main;
         board = BoardManager.instance;
         skillManager = SkillManager.instance;
-
-        TurnOrderManager.instance.StartTurn();
     }
 
     protected override void Update()
@@ -93,6 +91,10 @@ public class Player : Entity
     {
         // 第二次点击相同位置：移动
         Vector3Int clickCell = GetMouseInputCell();
+        if (board.GetEntity(clickCell) != null)
+        {
+            return;
+        }
         if (clickCell.Equals(currentMoveToCell))
         {
             Move();
@@ -104,7 +106,7 @@ public class Player : Entity
         currentMoveToCell = GetMouseInputCell();
         ClearFootprints();
 
-        CellPath path = HexGridUtil.FindPath(transform);
+        CellPath path = HexGridUtil.FindPath(this);
                 
         if (path != null)
         {

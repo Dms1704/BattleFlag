@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sylves;
@@ -49,11 +48,11 @@ public class HexGridUtil
     }
     
     #region 寻路
-    public static CellPath FindPath(Transform srcTransform)
+    public static CellPath FindPath(Entity entity)
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        var origin = srcTransform.worldToLocalMatrix.MultiplyPoint3x4(ray.origin);
-        var direction = srcTransform.worldToLocalMatrix.MultiplyVector(ray.direction);
+        var origin = entity.transform.worldToLocalMatrix.MultiplyPoint3x4(ray.origin);
+        var direction = entity.transform.worldToLocalMatrix.MultiplyVector(ray.direction);
         // 有这句才能确保寻路算法没有问题
         RaycastInfo? h = _grid.Raycast(origin, direction).Cast<RaycastInfo?>().FirstOrDefault();
         var currentCell = h?.cell;
@@ -63,13 +62,22 @@ public class HexGridUtil
         if (currentCell != null && !srcCell.Equals(currentCell.Value))
         {
             // Debug.Log("终点目标：" + currentCell.Value);
-            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, _ => true);
+            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, IsAccessible);
             // if (path != null)
             //     Debug.Log(path.ToString());
+        }
+        
+        bool IsAccessible(Cell cell)
+        {
+            Vector3Int cellPos = TilemapSingleton.instance.tilemap.WorldToCell(GetCellCenter(cell));
+            Entity thisEntity = BoardManager.instance.GetEntity(cellPos);
+            return !(thisEntity != null && thisEntity != entity);
         }
 
         return path;
     }
+
+
 
     public static Vector3[] PathToTargetPos(Transform srcTransform, CellPath path)
     {

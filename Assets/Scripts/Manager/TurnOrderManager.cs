@@ -11,6 +11,7 @@ public class TurnOrderManager : MonoBehaviour
     private int index = 0;
     
     // 回合次数
+    private bool started = false;
     private int turnOrder = 0;
     
     void Awake()
@@ -23,6 +24,11 @@ public class TurnOrderManager : MonoBehaviour
         {
             Destroy(gameObject); // 确保只有一个实例
         }
+    }
+
+    public Entity GetCurrentEntity()
+    {
+        return sortedEntityList[index];
     }
     
     public void EndOperate()
@@ -39,10 +45,11 @@ public class TurnOrderManager : MonoBehaviour
     {
         if (index >= sortedEntityList.Count)
         {
-            StartTurn();
+            StartTurnWithIn();
             return;
         }
         
+        Debug.Log("轮到" + sortedEntityList[index].name);
         Entity entity = sortedEntityList[index];
         entity.OnOperateOverChanged += EndOperate;
         entity.Operate();
@@ -51,6 +58,17 @@ public class TurnOrderManager : MonoBehaviour
     // 开始一个新的回合
     public void StartTurn()
     {
+        if (started)
+        {
+            return;
+        }
+
+        StartTurnWithIn();
+    }
+
+    private void StartTurnWithIn()
+    {
+        started = true;
         Debug.Log("回合次数：" + turnOrder);
         turnOrder++;
         index = 0;

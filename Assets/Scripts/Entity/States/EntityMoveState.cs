@@ -17,7 +17,6 @@ namespace States
         {
             base.Enter();
 
-            BoardManager.instance.RemoveEntityPosition(entity.GetGridPosition());
 
             entity.StartCoroutine(entity.MoveSequentially(moveSteps, () =>
             {

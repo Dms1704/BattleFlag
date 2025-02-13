@@ -27,6 +27,7 @@ public class Entity : MonoBehaviour
     // 事件
     public Action onFliped;
     public event Action OnOperateOverChanged;
+    public event Action OnInitialized;
     
     // 状态
     protected EntityStateMachine stateMachine { get; private set; }
@@ -48,6 +49,12 @@ public class Entity : MonoBehaviour
     {
         this.lastAnimBoolName = lastAnimBoolName;
     }
+    
+    private void Initialize()
+    {
+        // 初始化逻辑...
+        OnInitialized?.Invoke(); // 触发事件
+    }
 
     protected virtual void Awake()
     {
@@ -68,6 +75,9 @@ public class Entity : MonoBehaviour
         tilemap = TilemapSingleton.instance.tilemap;
         
         BoardManager.instance.AddEntity(this);
+        
+        OnInitialized += BoardManager.instance.HandleCharacterInitialized;
+        Initialize();
         
         stateMachine.Initialize(idleState);
     }

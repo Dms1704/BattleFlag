@@ -14,7 +14,7 @@ TagManager:
   - Player
   - Mask
   - Enemy
-  - 
+  - Decoration
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Mask
     uniqueID: 2044923775
+    locked: 0
+  - name: Decoration
+    uniqueID: 3072529747
     locked: 0
   - name: Player
     uniqueID: 1371695535

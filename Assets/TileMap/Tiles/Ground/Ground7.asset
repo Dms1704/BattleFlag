@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5cb4650e64b280c41932095263203d30, type: 3}
-  m_Name: SandGrass
+  m_Name: Ground7
   m_EditorClassIdentifier: 
-  tileSprite: {fileID: 21300000, guid: 192d2a3ed349f764e8575df9ad1dc721, type: 3}
+  tileSprite: {fileID: 2068666002, guid: 1ba8e7cdae0aacb42b7087edfbcfa1f0, type: 3}
   moveCost: 2
   defenseBonus: 0
   isWalkable: 1
-  tileType: 1
+  tileType: 0

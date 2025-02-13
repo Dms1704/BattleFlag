@@ -24,6 +24,8 @@
         public override void Exit()
         {
             base.Exit();
+            
+            BoardManager.instance.RemoveEntityPosition(entity.GetGridPosition());
         }
     }
 }

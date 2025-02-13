@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -19,6 +18,8 @@ public class BoardManager : MonoBehaviour
     private Dictionary<Vector3Int, Entity> entitiesDic = new();
     private IList<GameObject> smallHexMasks = new List<GameObject>();
     private IList<GameObject> redHexMasks = new List<GameObject>();
+    [SerializeField] private int numberOfCharacters = 3;
+    private int initializedCount = 0;
     
     void Awake()
     {
@@ -35,6 +36,23 @@ public class BoardManager : MonoBehaviour
     private void Start()
     {
         tilemap = TilemapSingleton.instance.tilemap;
+    }
+    
+    public void HandleCharacterInitialized()
+    {
+        initializedCount++;
+        if (initializedCount == numberOfCharacters)
+        {
+            AllCharactersLoaded();
+        }
+    }
+    
+    private void AllCharactersLoaded()
+    {
+        Debug.Log("所有角色加载完成！");
+        // 执行后续代码...
+        
+        TurnOrderManager.instance.StartTurn();
     }
 
     public void ClearHexMasks()
@@ -69,10 +87,10 @@ public class BoardManager : MonoBehaviour
             }
             else
             {
-                if (scope == 1)
-                {
-                    continue;
-                }
+                // if (scope == 1)
+                // {
+                //     continue;
+                // }
                 GameObject smallHexMask = Instantiate(smallHexMaskPrefab);
                 smallHexMask.transform.position = cellCenter;
                 smallHexMasks.Add(smallHexMask);
