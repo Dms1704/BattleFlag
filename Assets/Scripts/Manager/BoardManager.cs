@@ -13,7 +13,7 @@ public class BoardManager : MonoBehaviour
     private Tilemap tilemap;
     
     // 数据
-    public Dictionary<Vector3Int, HexTerrainTile> tileDic { get; set; }
+    public Dictionary<Vector3Int, TileBase> groundDic { get; set; }
     private IList<Entity> entities = new List<Entity>();
     private Dictionary<Vector3Int, Entity> entitiesDic = new();
     private IList<GameObject> smallHexMasks = new List<GameObject>();
@@ -69,7 +69,7 @@ public class BoardManager : MonoBehaviour
         redHexMasks.Clear();
     }
 
-    public void GenerateAttackHexMasks(Transform transform, int scope)
+    public void GenerateAttackHexMasks(Transform transform, int scope, List<Entity> enemies)
     {
         ClearHexMasks();
 
@@ -79,8 +79,9 @@ public class BoardManager : MonoBehaviour
             Vector3 cellCenter = transform.TransformPoint(HexGridUtil.GetCellCenter(list[i]));
             Vector3Int tilePos = tilemap.WorldToCell(cellCenter);
 
-            if (entitiesDic.TryGetValue(tilePos, out _))
+            if (entitiesDic.TryGetValue(tilePos, out Entity enemy) && enemy is Enemy)
             {
+                enemies.Add(enemy);
                 GameObject redHexMask = Instantiate(redHexMaskPrefab);
                 redHexMask.transform.position = cellCenter;
                 redHexMasks.Add(redHexMask);
@@ -98,9 +99,9 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public HexTerrainTile FindTile(Vector3Int position)
+    public TileBase FindTile(Vector3Int position)
     {
-        return tileDic.GetValueOrDefault(position);
+        return groundDic.GetValueOrDefault(position);
     }
 
     public Dictionary<Vector3Int, Entity> GetEntitiesDic()

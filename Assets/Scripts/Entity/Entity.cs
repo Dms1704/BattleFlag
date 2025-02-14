@@ -101,7 +101,7 @@ public class Entity : MonoBehaviour
     public IEnumerator MoveSequentially(IList<MoveStepLO> moveSteps, MoveOver moveOver)
     {
         isBusy = true;
-        moveSteps.Insert(0, new MoveStepLO(rb.position, 0));
+        moveSteps.Insert(0, new MoveStepLO(transform.position, 0));
         for (int i = 0; i < moveSteps.Count - 1; i++)
         {
             yield return MoveToPosition(moveSteps[i], moveSteps[i + 1]);
@@ -121,13 +121,13 @@ public class Entity : MonoBehaviour
             currentPos = Vector3.Lerp(srcStep.targetPos, targetStep.targetPos, t / timeToMove);
  
             // 设置对象位置
-            rb.position = currentPos;
+            transform.position = currentPos;
  
             // 等待下一帧
             yield return null;
         }
         
-        rb.position = targetStep.targetPos;
+        transform.position = targetStep.targetPos;
         stats.CostActionPoint(targetStep.moveCost);
     }
 

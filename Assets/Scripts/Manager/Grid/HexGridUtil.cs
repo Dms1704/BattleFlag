@@ -14,7 +14,7 @@ public class HexGridUtil
 
     public static Vector3Int IgnoreZ(Vector3Int pos)
     {
-        return new Vector3Int(-pos.x, pos.y, 0);
+        return new Vector3Int(pos.x, pos.y, 0);
     }
 
     /**
@@ -62,7 +62,7 @@ public class HexGridUtil
         if (currentCell != null && !srcCell.Equals(currentCell.Value))
         {
             // Debug.Log("终点目标：" + currentCell.Value);
-            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, IsAccessible);
+            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, _ => true);
             // if (path != null)
             //     Debug.Log(path.ToString());
         }
@@ -76,8 +76,6 @@ public class HexGridUtil
 
         return path;
     }
-
-
 
     public static Vector3[] PathToTargetPos(Transform srcTransform, CellPath path)
     {

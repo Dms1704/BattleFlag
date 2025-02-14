@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cb4650e64b280c41932095263203d30, type: 3}
+  m_Script: {fileID: 11500000, guid: c0686951e1f74e76b1b2cc9281e4665b, type: 3}
   m_Name: Grass1
   m_EditorClassIdentifier: 
-  tileSprite: {fileID: 1167787996, guid: fc9d88ac8b8cfc34d8d0241355e2e0ba, type: 3}
+  tileSprite: {fileID: 1635037509, guid: 838994ea6140e3f468c9bd9f9553cc53, type: 3}
   moveCost: 2
   defenseBonus: 0
   isWalkable: 1
-  tileType: 1
+  tileType: 0

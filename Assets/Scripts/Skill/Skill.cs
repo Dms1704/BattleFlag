@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Skill
 {
-    public int scope = 1;
+    public int scope = 2;
     public int cost = 4;
 
     protected Entity _entity;

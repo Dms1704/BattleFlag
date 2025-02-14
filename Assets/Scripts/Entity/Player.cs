@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Models;
+using Prefabs;
 using Sylves;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ public class Player : Entity
     private IList<GameObject> footprints = new List<GameObject>();
     private Vector3Int currentMoveToCell;
     private SkillManager skillManager;
+    private List<Entity> enemies = new List<Entity>();
     
     protected override void Start()
     {
@@ -43,8 +45,9 @@ public class Player : Entity
                 if (attackReady)
                 {
                     Vector3 screenToWorldPoint = camera.ScreenToWorldPoint(Input.mousePosition);
-                    Entity entity = board.GetEntity(HexGridUtil.IgnoreZ(tilemap.WorldToCell(screenToWorldPoint)));
-                    if (entity != null)
+                    Vector3Int cellPos = HexGridUtil.IgnoreZ(tilemap.WorldToCell(screenToWorldPoint));
+                    Entity entity = board.GetEntity(cellPos);
+                    if (entity != null && enemies.Contains(entity))
                     {
                         UseSkill(entity);
                     }
@@ -66,7 +69,8 @@ public class Player : Entity
                 Skill skill = skillManager.GetSkill(SkillType.Melee);
                 if (!attackReady)
                 {
-                    board.GenerateAttackHexMasks(transform, skill.scope);
+                    enemies = new List<Entity>();
+                    board.GenerateAttackHexMasks(transform, skill.scope, enemies);
                     attackReady = true;
                 }
             }
@@ -118,14 +122,14 @@ public class Player : Entity
                 // 基于行动点判断角色能够走到哪
                 Step step = steps[i];
                 Vector3Int cellPos = tilemap.WorldToCell(HexGridUtil.GetCellCenter(step.Dest));
-                HexTerrainTile tile = tilemap.GetTile<HexTerrainTile>(cellPos);
+                DataAccessible tile = (DataAccessible)tilemap.GetTile(cellPos);
                 Vector3 end = transform.TransformPoint(HexGridUtil.GetCellCenter(step.Dest));
                 GenerateFootprints(step, end);
 
                 if (tile != null)
                 {
-                    actionPoint -= tile.moveCost;
-                    moveStepLos.Add(new MoveStepLO(end, tile.moveCost));
+                    actionPoint -= tile.MoveCost();
+                    moveStepLos.Add(new MoveStepLO(end, tile.MoveCost()));
                 }
                 else
                 {
