@@ -1,9 +1,13 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using Sylves;
 using UnityEngine;
 
-public class HexGridUtil
+public class HexGridUtil : MonoBehaviour
 {
     private static readonly HexGrid _grid = new(new Vector2(1, 0.519586f), HexOrientation.FlatTopped);
     
@@ -62,14 +66,16 @@ public class HexGridUtil
         if (currentCell != null && !srcCell.Equals(currentCell.Value))
         {
             // Debug.Log("终点目标：" + currentCell.Value);
-            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, _ => true);
+            path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, IsAccessible);
             // if (path != null)
             //     Debug.Log(path.ToString());
         }
         
         bool IsAccessible(Cell cell)
         {
-            Vector3Int cellPos = TilemapSingleton.instance.tilemap.WorldToCell(GetCellCenter(cell));
+            // 这里在寻路算法里面，需要使用本地坐标
+            Vector3 point = entity.transform.TransformPoint(GetCellCenter(cell));
+            Vector3Int cellPos = IgnoreZ(TilemapSingleton.instance.tilemap.WorldToCell(point));
             Entity thisEntity = BoardManager.instance.GetEntity(cellPos);
             return !(thisEntity != null && thisEntity != entity);
         }
