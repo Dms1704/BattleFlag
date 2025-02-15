@@ -15,8 +15,8 @@ public class ItemEquipmentSlotUI : ItemSlotUI
         {
             return;
         }
-        Inventory.instance.UnEquip(item.itemData as ItemData_Equipment);
-        Inventory.instance.AddItem(item.itemData as ItemData_Equipment);
+        Inventory.instance.UnEquip(item.itemData as ItemEquipmentData);
+        Inventory.instance.AddItem(item.itemData as ItemEquipmentData);
         CleanupSlot();
     }
 }

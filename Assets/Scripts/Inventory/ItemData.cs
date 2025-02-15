@@ -7,7 +7,7 @@ public enum ItemType
     Equipment
 }
 
-[CreateAssetMenu(fileName = "������", menuName = "Data/Item")]
+[CreateAssetMenu(fileName = "Item", menuName = "Data/Item")]
 public class ItemData : ScriptableObject
 {
     public ItemType ItemType;

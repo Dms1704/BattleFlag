@@ -1,11 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-public enum WeaponType {
-    Big,
-    Small,
-}
 
 public enum WeaponSubdivisionType
 {
@@ -13,20 +6,20 @@ public enum WeaponSubdivisionType
 }
 public class Weapon : MonoBehaviour
 {
-    private SpriteRenderer sr;
-    public WeaponType weaponType;
-    private float rotation;
-    
-    void Start()
-    {
-        sr = GetComponent<SpriteRenderer>();
-        
-        rotation = weaponType == WeaponType.Big ? 90 : 0;
-        transform.rotation = Quaternion.Euler(0, 0, rotation);
-    }
-
-    void Update()
-    {
-        
-    }
+    // private SpriteRenderer sr;
+    // public WeaponType weaponType;
+    // private float rotation;
+    //
+    // void Start()
+    // {
+    //     sr = GetComponent<SpriteRenderer>();
+    //     
+    //     rotation = weaponType == WeaponType.TwoHanded ? 90 : 0;
+    //     transform.rotation = Quaternion.Euler(0, 0, rotation);
+    // }
+    //
+    // void Update()
+    // {
+    //     
+    // }
 }

@@ -28,6 +28,10 @@ public class TurnOrderManager : MonoBehaviour
 
     public Entity GetCurrentEntity()
     {
+        if (sortedEntityList == null || sortedEntityList.Count == 0)
+        {
+            return null;
+        }
         return sortedEntityList[index];
     }
     

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -26,9 +28,22 @@ public class ItemSlotUI : MonoBehaviour, IPointerDownHandler, IPointerEnterHandl
         {
             image.sprite = item.itemData.icon;
 
-            text.text = item.stackCount > 1 ? item.stackCount.ToString() : "";
+            text.text = item.GetStack() > 1 ? item.stackCount.ToString() : "";
         }
     }
+
+    // private void Update()
+    // {
+    //     if (Input.GetMouseButtonDown(0)) {
+    //         PointerEventData data = new PointerEventData(EventSystem.current);
+    //         data.position = Input.mousePosition;
+    //         List<RaycastResult> results = new List<RaycastResult>();
+    //         EventSystem.current.RaycastAll(data, results);
+    //         foreach (var result in results) {
+    //             Debug.Log("Hit: " + result.gameObject.name);
+    //         }
+    //     }
+    // }
 
     public void CleanupSlot()
     {

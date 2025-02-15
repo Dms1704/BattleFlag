@@ -12,6 +12,15 @@ public class InventoryItem
         AddStack();
     }
 
+    public int GetStack()
+    {
+        if (itemData.ItemType == ItemType.Equipment)
+        {
+            return 1;
+        }
+        return stackCount;
+    }
+
     public void AddStack() => stackCount++;
     public void RemoveStack() => stackCount--;
 }

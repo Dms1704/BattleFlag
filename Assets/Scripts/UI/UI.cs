@@ -23,15 +23,8 @@ public class UI : MonoBehaviour
 
     public void SwitchCharacterUITo(GameObject menu)
     {
-        equipmentUI.SetActive(true);
-        skillUI.SetActive(true);
-        if (menu == equipmentUI)
-        {
-            skillUI.SetActive(true);
-        }
-        else
-        {
-            equipmentUI.SetActive(false);
-        }
+        equipmentUI.SetActive(false);
+        skillUI.SetActive(false);
+        menu.SetActive(true);
     }
 }

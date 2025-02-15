@@ -1,18 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum EquipmentType
 {
-    Weapon,
+    MainWeapon,
+    DeputyWeapon,
     Armor,
     Amulet,
-    Flask
 }
 [CreateAssetMenu(fileName = "equipment", menuName = "Data/equipment")]
-public class ItemData_Equipment : ItemData
+public class ItemEquipmentData : ItemData
 {
     public EquipmentType equipmentType;
+    public bool bTwoHanded;
     [Header("效果")]
     public List<ItemEffect> effects;
     [TextArea]
@@ -29,10 +29,10 @@ public class ItemData_Equipment : ItemData
 
     [Header("伤害")]
     public int damage;
-    public int critPower;  // �����˺� Ĭ��ֵ150%
-    public int critChance; // ������
+    public int critPower; 
+    public int critChance;
 
-    [Header("��ƷЧ��")]
+    [Header("装备冷却")]
     public float itemCooldown;
 
     private int descriptionLine;
@@ -105,9 +105,9 @@ public class ItemData_Equipment : ItemData
         AddItemDescription(armor, "armor");
         AddItemDescription(evasion, "evasion");
 
-        AddItemDescription(damage, "�˺�");
-        AddItemDescription(critPower, "�����˺�");
-        AddItemDescription(critChance, "������");
+        AddItemDescription(damage, "damage");
+        AddItemDescription(critPower, "critPower");
+        AddItemDescription(critChance, "critChance");
 
         if (descriptionLine < 3)
         {

@@ -11,7 +11,6 @@ public class Entity : MonoBehaviour
     // Unity数据
     [SerializeField] protected Vector2 knockbackDirection;
     [SerializeField] protected float knockbackDuration;
-    
     [Header("移动速度")]
     [SerializeField] protected float moveSpeed;
 
@@ -23,6 +22,9 @@ public class Entity : MonoBehaviour
     protected bool facingRight = true;
     public string lastAnimBoolName { get; private set; }
     protected IList<MoveStepLO> moveStepLos;
+    
+    // 数据接口
+    public IEquippable equipment { get; private set; }
     
     // 事件
     public Action onFliped;
@@ -44,7 +46,12 @@ public class Entity : MonoBehaviour
     public CapsuleCollider2D cd { get; private set; }
     public Tilemap tilemap { get; private set; }
     public GameObject operatingCursor;
-
+    public GameObject mainWeapon;
+    public GameObject chessBase;
+    [HideInInspector] public SpriteRenderer mainWeaponSr;
+    [HideInInspector] public SpriteRenderer playerSpriteSr;
+    [HideInInspector] public SpriteRenderer chessBaseSpriteSr;
+    
     public virtual void AssignLastAnimName(string lastAnimBoolName)
     {
         this.lastAnimBoolName = lastAnimBoolName;
@@ -73,6 +80,11 @@ public class Entity : MonoBehaviour
         stats = GetComponent<CharacterStats>();
         cd = GetComponent<CapsuleCollider2D>();
         tilemap = TilemapSingleton.instance.tilemap;
+        mainWeaponSr = mainWeapon.GetComponent<SpriteRenderer>();
+        playerSpriteSr = animator.gameObject.GetComponent<SpriteRenderer>();
+        chessBaseSpriteSr = chessBase.GetComponent<SpriteRenderer>();
+
+        equipment = new EquippableImpl();
         
         BoardManager.instance.AddEntity(this);
         
@@ -80,6 +92,23 @@ public class Entity : MonoBehaviour
         Initialize();
         
         stateMachine.Initialize(idleState);
+    }
+    
+    protected virtual void Update()
+    {
+        stateMachine.currentState.Update();
+
+        UpdateSprite();
+    }
+
+    private void UpdateSprite()
+    {
+        if (CanEquip() && equipment.IsDirty())
+        {
+            ItemEquipmentData mainEquipment = equipment.GetEquipment(EquipmentType.MainWeapon);
+            mainWeaponSr.sprite = mainEquipment.icon;
+            equipment.Clean();
+        }
     }
 
     public void ClearMoveSteps()
@@ -90,11 +119,6 @@ public class Entity : MonoBehaviour
     public void CostActionPoint(int cost)
     {
         stats.actionPoint.AddModifier(-cost);
-    }
-
-    protected virtual void Update()
-    {
-        stateMachine.currentState.Update();
     }
 
     public delegate void MoveOver();
@@ -264,5 +288,10 @@ public class Entity : MonoBehaviour
     public Vector3Int GetGridPosition()
     {
         return HexGridUtil.IgnoreZ(tilemap.WorldToCell(transform.position));
+    }
+
+    public bool CanEquip()
+    {
+        return equipment != null;
     }
 }
