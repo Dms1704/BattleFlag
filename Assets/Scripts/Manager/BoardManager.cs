@@ -18,7 +18,7 @@ public class BoardManager : MonoBehaviour
     private Dictionary<Vector3Int, Entity> entitiesDic = new();
     private IList<GameObject> smallHexMasks = new List<GameObject>();
     private IList<GameObject> redHexMasks = new List<GameObject>();
-    [SerializeField] private int numberOfCharacters = 3;
+    [SerializeField] private int numberOfCharacters = 2;
     private int initializedCount = 0;
     
     void Awake()

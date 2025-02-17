@@ -5,6 +5,8 @@ public class Enemy : Entity
     protected override void Start()
     {
         base.Start();
+        
+        faceRight = -1;
     }
 
     protected override void Update()

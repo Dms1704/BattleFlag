@@ -17,8 +17,6 @@
         public override void Update()
         {
             base.Update();
-            
-            entity.SetZeroVelocity();
         }
 
         public override void Exit()

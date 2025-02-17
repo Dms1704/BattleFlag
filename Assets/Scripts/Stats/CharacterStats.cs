@@ -74,6 +74,7 @@ public class CharacterStats : MonoBehaviour
     {
         if (TargetCanAvoid(targetStats))
         {
+            entity.StartCoroutine(nameof(Entity.KnockbackAndBack));
             return;
         }
 
@@ -102,8 +103,8 @@ public class CharacterStats : MonoBehaviour
     {
         DecreaseHealthBy(damage);
 
-        // entity.DamageImpact();
-        // fx.StartCoroutine("FlashFX");
+        fx.StartCoroutine("FlashFX");
+        entity.StartCoroutine(nameof(Entity.KnockbackAndBack));
 
         if (currentHealth <= 0 && !isDead)
         {

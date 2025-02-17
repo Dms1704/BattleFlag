@@ -18,6 +18,7 @@ public class UI : MonoBehaviour
         {
             TurnOrderManager.instance.GetCurrentEntity().enabled = characterUI.activeSelf;
             characterUI.SetActive(!characterUI.activeSelf);
+            Inventory.instance.UpdateModelToUI();
         }
     }
 

@@ -10,6 +10,8 @@
         public override void Enter()
         {
             base.Enter();
+
+            entity.StartCoroutine(nameof(Entity.AttackAndDash));
         }
 
         public override void Update()

@@ -2,7 +2,7 @@
 
 public class EquippableImpl : IEquippable
 {
-    private bool dirty = false;
+    private bool dirty = true;
 
     public Dictionary<EquipmentType, ItemEquipmentData> itemEquipmentDatas { get; set; } = new();
 
@@ -55,6 +55,6 @@ public class EquippableImpl : IEquippable
 
     public ItemEquipmentData GetEquipment(EquipmentType equipmentType)
     {
-        return itemEquipmentDatas[equipmentType];
+        return itemEquipmentDatas.GetValueOrDefault(equipmentType);
     }
 }

@@ -4,30 +4,29 @@ using System.Collections.Generic;
 using Models;
 using States;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class Entity : MonoBehaviour
 {
     // Unity数据
-    [SerializeField] protected Vector2 knockbackDirection;
-    [SerializeField] protected float knockbackDuration;
     [Header("移动速度")]
     [SerializeField] protected float moveSpeed;
+    [FormerlySerializedAs("knockbackSpeed")]
+    [Header("受击和闪躲")]
+    [SerializeField] protected float SmilingMovementSpeed;
+    [SerializeField] protected float SmilingMovementOffset;
 
     // 数据
-    protected bool isKnocked;
     protected bool isBusy;
     public bool isOperating;
-    public int facingDir { get; private set; } = 1;
-    protected bool facingRight = true;
-    public string lastAnimBoolName { get; private set; }
     protected IList<MoveStepLO> moveStepLos;
+    public int faceRight = 1;
     
     // 数据接口
     public IEquippable equipment { get; private set; }
     
     // 事件
-    public Action onFliped;
     public event Action OnOperateOverChanged;
     public event Action OnInitialized;
     
@@ -51,11 +50,6 @@ public class Entity : MonoBehaviour
     [HideInInspector] public SpriteRenderer mainWeaponSr;
     [HideInInspector] public SpriteRenderer playerSpriteSr;
     [HideInInspector] public SpriteRenderer chessBaseSpriteSr;
-    
-    public virtual void AssignLastAnimName(string lastAnimBoolName)
-    {
-        this.lastAnimBoolName = lastAnimBoolName;
-    }
     
     private void Initialize()
     {
@@ -106,7 +100,7 @@ public class Entity : MonoBehaviour
         if (CanEquip() && equipment.IsDirty())
         {
             ItemEquipmentData mainEquipment = equipment.GetEquipment(EquipmentType.MainWeapon);
-            mainWeaponSr.sprite = mainEquipment.icon;
+            mainWeaponSr.sprite = !mainEquipment ? null : mainEquipment.icon;
             equipment.Clean();
         }
     }
@@ -119,6 +113,41 @@ public class Entity : MonoBehaviour
     public void CostActionPoint(int cost)
     {
         stats.actionPoint.AddModifier(-cost);
+    }
+    
+    public IEnumerator AttackAndDash()
+    {
+        isBusy = true;
+        yield return Knockback(transform.position, transform.position + new Vector3((float)(faceRight * SmilingMovementOffset * 0.4), 0, 0), transform);
+        yield return Knockback(transform.position, transform.position + new Vector3((float)(-faceRight * SmilingMovementOffset * 0.4), 0, 0), transform);
+        isBusy = false;
+    }
+    
+    public IEnumerator KnockbackAndBack()
+    {
+        isBusy = true;
+        yield return Knockback(transform.position, transform.position + new Vector3(-faceRight * SmilingMovementOffset, 0, 0), transform);
+        yield return Knockback(transform.position, transform.position + new Vector3(faceRight * SmilingMovementOffset, 0, 0), transform);
+        isBusy = false;
+    }
+
+    public IEnumerator Knockback(Vector3 src, Vector3 dst, Transform moveTarget)
+    {
+        Vector3 currentPos = src;
+        float distance = Vector3.Distance(src, dst);
+        float timeToMove = distance / SmilingMovementSpeed;
+        for (float t = 0; t < timeToMove; t += Time.deltaTime)
+        {
+            // 计算插值位置
+            currentPos = Vector3.Lerp(moveTarget.position, dst, t / timeToMove);
+ 
+            // 设置对象位置
+            moveTarget.position = currentPos;
+ 
+            // 等待下一帧
+            yield return null;
+        }
+        moveTarget.position = dst;
     }
 
     public delegate void MoveOver();
@@ -154,83 +183,6 @@ public class Entity : MonoBehaviour
         transform.position = targetStep.targetPos;
         stats.CostActionPoint(targetStep.moveCost);
     }
-
-    public virtual void SlowEntityBy(float slowPercentage, float slowDuration)
-    {
-
-    }
-
-    public virtual void DamageImpact()
-    {
-        StartCoroutine("HitKnockback");
-    }
-
-    protected virtual IEnumerator HitKnockback()
-    {
-        isKnocked = true;
-
-        rb.velocity = new Vector2(knockbackDirection.x * -facingDir, knockbackDirection.y);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        isKnocked = false;
-    }
-
-    #region 速度
-    public void SetZeroVelocity()
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(0, 0); 
-    }
-
-    public void SetVelocity(float xInput, float yInput)
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(xInput, yInput);
-    }
-
-    public void SetVelocityAndFlip(float xInput, float yInput)
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(xInput, yInput);
-        FlipController(xInput);
-    }
-    #endregion
-
-    #region 翻转
-    public virtual void Flip()
-    {
-        if (isKnocked)
-        {
-            return;
-        }
-
-        facingDir = facingDir * -1;
-        facingRight = !facingRight;
-        transform.localRotation = facingRight ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-        //transform.Rotate(0, 180, 0);
-
-        onFliped?.Invoke();
-    }
-
-    public virtual void FlipController(float _x)
-    {
-        if (_x > 0 && !facingRight)
-        {
-            Flip();
-        }
-        else if (_x < 0 && facingRight)
-        {
-            Flip();
-        }
-    }
-    #endregion
 
     #region 网格对齐
     public void SetPositionUseOddQ(Vector3Int oddQVector)

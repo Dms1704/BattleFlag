@@ -12,14 +12,9 @@ public class EntityFX : MonoBehaviour
     [SerializeField] private Material hitMat;
     private Material originalMat;
 
-    [Header("元素颜色")]
-    [SerializeField] private Color chilledColor;
-    [SerializeField] private Color[] ignitedColor;
-    [SerializeField] private Color[] shockedColor;
-
     private void Start()
     {
-        sr = GetComponentInChildren<SpriteRenderer>();
+        sr = GetComponentsInChildren<SpriteRenderer>()[1];
 
         originalMat = sr.material;
     }
@@ -36,59 +31,11 @@ public class EntityFX : MonoBehaviour
         }
     }
 
-    public void ChillFXFor(float seconds)
-    {
-        InvokeRepeating("ChilledColorFX", 0, .5f);
-        sr.color = chilledColor;
-        Invoke("CancelBlink", seconds);
-    }
-
-    public void IgniteFXFor(float seconds)
-    {
-        InvokeRepeating("IgniteColorFX", 0, .5f);
-        Invoke("CancelBlink", seconds);
-    }
-
-    public void ShockFXFor(float seconds)
-    {
-        InvokeRepeating("ShockedColorFX", 0, .5f);
-        Invoke("CancelBlink", seconds);
-    }
-
-    private void IgniteColorFX()
-    {
-        if (sr.color != ignitedColor[0])
-        {
-            sr.color = ignitedColor[0];
-        }
-        else
-        {
-            sr.color = ignitedColor[1];
-        }
-    }
-
-    private void ShockedColorFX()
-    {
-        if (sr.color != shockedColor[0])
-        {
-            sr.color = shockedColor[0];
-        }
-        else
-        {
-            sr.color = shockedColor[1];
-        }
-    }
-
-    private void ChilledColorFX()
-    {
-        sr.color = chilledColor;
-    }
-
     private IEnumerator FlashFX()
     {
         sr.material = hitMat;
         Color color = sr.color;
-        sr.color = Color.white;
+        sr.color = Color.red;
 
         yield return new WaitForSeconds(.2f);
 

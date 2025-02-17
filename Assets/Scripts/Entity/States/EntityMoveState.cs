@@ -17,7 +17,6 @@ namespace States
         {
             base.Enter();
 
-
             entity.StartCoroutine(entity.MoveSequentially(moveSteps, () =>
             {
                 stateMachine.ChangeState(entity.idleState);

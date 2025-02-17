@@ -61,7 +61,7 @@ public class Inventory : MonoBehaviour
         currentEntity.equipment.Unequip(itemEquipmentToDelete);
     }
 
-    private void UpdateModelToUI()
+    public void UpdateModelToUI()
     {
         UpdateSlotsUI();
 
@@ -74,11 +74,22 @@ public class Inventory : MonoBehaviour
                     currentEntity.equipment.itemEquipmentDatas[EquipmentType.MainWeapon].icon,
                     null, equipment.bTwoHanded);
             }
+            else
+            {
+                characterSpriteUI.UpdateSprite(currentEntity.playerSpriteSr.sprite,
+                    null,
+                    null, false);
+            }
         }
     }
 
     private void UpdateSlotsUI()
     {
+        for (int i = 0; i < equipmentItemSlots.Length; i++)
+        {
+            equipmentItemSlots[i].CleanupSlot();
+        }
+        
         Entity currentEntity = TurnOrderManager.instance.GetCurrentEntity();
         if (currentEntity != null && currentEntity.CanEquip())
         {

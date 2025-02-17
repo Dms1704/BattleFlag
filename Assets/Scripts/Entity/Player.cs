@@ -20,7 +20,7 @@ public class Player : Entity
     // 数据
     private bool attackReady = false;
     private IList<GameObject> footprints = new List<GameObject>();
-    private Vector3Int currentMoveToCell;
+    private Vector3Int currentMoveToCell = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
     private SkillManager skillManager;
     private List<Entity> enemies = new List<Entity>();
     
@@ -84,7 +84,7 @@ public class Player : Entity
         {
             skill.UseSkill(entity);
             stateMachine.ChangeState(attackState);
-            StartCoroutine(nameof(BusyFor), .2f);
+            stats.DoDamage(entity.stats);
         }
 
         attackReady = false;
