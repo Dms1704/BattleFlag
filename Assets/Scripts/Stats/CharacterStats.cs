@@ -111,6 +111,7 @@ public class CharacterStats : MonoBehaviour
     {
         DecreaseHealthBy(damage);
 
+        AudioManager.instance.PlayPainfulSound();
         fx.StartCoroutine("FlashFX");
         entity.StartCoroutine(nameof(Entity.KnockbackAndBack));
 
