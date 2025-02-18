@@ -24,7 +24,7 @@ public class Entity : MonoBehaviour
     public int faceRight = 1;
     public bool isAlly = true;
     
-    // 数据接口
+    // 数据接口（能力组件）
     public IEquippable equipment { get; private set; }
     
     // 事件
@@ -109,11 +109,6 @@ public class Entity : MonoBehaviour
     public void ClearMoveSteps()
     {
         moveStepLos.Clear();
-    }
-
-    public void CostActionPoint(int cost)
-    {
-        stats.actionPoint.AddModifier(-cost);
     }
     
     public IEnumerator AttackAndDash()

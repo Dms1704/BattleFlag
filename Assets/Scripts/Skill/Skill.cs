@@ -29,6 +29,6 @@ public class Skill
             return;
         }
         
-        entity.CostActionPoint(cost);
+        entity.stats.CostActionPoint(cost);
     }
 }

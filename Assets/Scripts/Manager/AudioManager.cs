@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     
     // AudioClips
     [SerializeField] private AudioClip painfulSound;
+    [SerializeField] private AudioClip cooldownSound;
 
     private void InitializePool()
     {
@@ -58,6 +59,11 @@ public class AudioManager : MonoBehaviour
     public void PlayPainfulSound()
     {
         PlaySound(painfulSound, .5f);
+    }
+
+    public void PlayCooldownSound()
+    {
+        PlaySound(cooldownSound, 1f);
     }
     
     public void PlaySound(AudioClip clip, float volume)

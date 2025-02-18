@@ -20,10 +20,10 @@ namespace States
             entity.StartCoroutine(entity.MoveSequentially(moveSteps, () =>
             {
                 stateMachine.ChangeState(entity.idleState);
-                if (entity.stats.GetStat(StatType.actionPoint).GetValue() <= 1)
-                {
-                    entity.OperateOver();
-                }
+                // if (entity.stats.GetStat(StatType.actionPoint).GetValue() <= 1)
+                // {
+                //     entity.OperateOver();
+                // }
             }));
         }
 

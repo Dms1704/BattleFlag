@@ -42,6 +42,7 @@ public class EntityStatsUI : MonoBehaviour
     
     private void UpdateActionPointsUI()
     {
+        Debug.Log(stats.actionPoint.GetValue());
         actionPointSlider.maxValue = stats.CalculatedMaxActionPoint();
         actionPointsEffectSlider.maxValue = stats.CalculatedMaxActionPoint();
         

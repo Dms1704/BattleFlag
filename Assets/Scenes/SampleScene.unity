@@ -2159,6 +2159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   painfulSound: {fileID: 8300000, guid: 5c072946eec5c6747aea57d5843a4e59, type: 3}
+  cooldownSound: {fileID: 8300000, guid: bafd071415d703e4cb6b1b704291ff2f, type: 3}
 --- !u!1 &633170808
 GameObject:
   m_ObjectHideFlags: 0

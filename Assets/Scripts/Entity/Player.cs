@@ -54,6 +54,10 @@ public class Player : Entity
                     Vector3 screenToWorldPoint = camera.ScreenToWorldPoint(Input.mousePosition);
                     Vector3Int cellPos = HexGridUtil.IgnoreZ(tilemap.WorldToCell(screenToWorldPoint));
                     Entity entity = board.GetEntity(cellPos);
+                    if (!HasActionPoint())
+                    {
+                        return;
+                    }
                     if (entity != null && enemies.Contains(entity))
                     {
                         UseSkill(entity);
@@ -76,8 +80,9 @@ public class Player : Entity
             }
             else if (Input.GetKeyDown(KeyCode.Alpha1) && !isBusy)
             {
-                ClearFootprints();
+                if (!HasActionPoint()) return;
                 Skill skill = skillManager.GetSkill(SkillType.Melee);
+                ClearFootprints();
                 if (!attackReady)
                 {
                     enemies = new List<Entity>();
@@ -88,12 +93,24 @@ public class Player : Entity
         }
     }
 
+    private bool HasActionPoint()
+    {
+        if (stats.actionPoint.GetValue() < skillManager.GetSkill(SkillType.Melee).cost)
+        {
+            Debug.Log("行动点数不够");
+            AudioManager.instance.PlayCooldownSound();
+            return false;
+        }
+
+        return true;
+    }
+
     private void UseSkill(Entity entity)
     {
         Skill skill = skillManager.GetSkill(SkillType.Melee);
         if (entity is Enemy)
         {
-            skill.UseSkill(entity);
+            skill.UseSkill(this);
             stateMachine.ChangeState(attackState);
             stats.DoDamage(entity.stats);
         }
