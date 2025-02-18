@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
-using Random = UnityEngine.Random;
 
 public class HexGridController : MonoBehaviour
 {
@@ -54,7 +51,7 @@ public class HexGridController : MonoBehaviour
     */
     private void UpdateHexMask(Vector3Int cellPos)
     {
-        UnityEngine.Tilemaps.TileBase tile = BoardManager.instance.FindTile(new Vector3Int(cellPos.x, cellPos.y, -cellPos.x-cellPos.y));
+        TileBase tile = BoardManager.instance.FindTile(new Vector3Int(cellPos.x, cellPos.y, -cellPos.x-cellPos.y));
         Vector3 center = _groundTilemap.CellToWorld(cellPos);
         if (tile != null)
         {

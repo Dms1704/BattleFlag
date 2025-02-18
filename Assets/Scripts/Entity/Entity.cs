@@ -22,6 +22,7 @@ public class Entity : MonoBehaviour
     public bool isOperating;
     protected IList<MoveStepLO> moveStepLos;
     public int faceRight = 1;
+    public bool isAlly = true;
     
     // 数据接口
     public IEquippable equipment { get; private set; }
@@ -203,6 +204,24 @@ public class Entity : MonoBehaviour
 
     public virtual void Die()
     {
+        Destroy(gameObject);
+        TurnOrderManager.instance.RemoveSortListEntity(this);
+        BoardManager.instance.RemoveEntity(this);
+        
+        int winOrLose = BoardManager.instance.WinOrLose();
+        if (winOrLose == 0)
+        {
+            return;
+        }
+        if (winOrLose == 1)
+        {
+            UI.instance.WinOrLose(true);
+            return;
+        }
+        if (winOrLose == 2)
+        {
+            UI.instance.WinOrLose(false);
+        }
     }
     
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();

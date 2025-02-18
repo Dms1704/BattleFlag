@@ -41,6 +41,7 @@ public class CharacterStats : MonoBehaviour
     private bool isDead;
 
     public System.Action onHealthChanged;
+    public System.Action onActionPointChanged;
 
     protected virtual void Start()
     {
@@ -51,11 +52,18 @@ public class CharacterStats : MonoBehaviour
         fx = GetComponent<EntityFX>();
 
         onHealthChanged?.Invoke();
+        onActionPointChanged?.Invoke();
     }
 
     protected virtual void Update()
     {
 
+    }
+
+    public void UpdateStats()
+    {
+        onHealthChanged?.Invoke();
+        onActionPointChanged?.Invoke();
     }
 
     public virtual void IncreaseStatBy(int modifier, float duration, Stat statToModifier)
@@ -109,6 +117,7 @@ public class CharacterStats : MonoBehaviour
         if (currentHealth <= 0 && !isDead)
         {
             Die();
+            entity.Die();
         }
     }
 
@@ -126,18 +135,19 @@ public class CharacterStats : MonoBehaviour
     protected virtual void DecreaseHealthBy(int damage)
     {
         currentHealth -= damage;
-
         onHealthChanged?.Invoke();
     }
 
     public virtual void CostActionPoint(int cost)
     {
         actionPoint.AddModifier(-cost);
+        onActionPointChanged?.Invoke();
     }
 
     public virtual void RecoveryActionPoint()
     {
         actionPoint.RemoveAllModifiers();
+        onActionPointChanged?.Invoke();
     }
 
     public virtual void Die()
@@ -179,6 +189,11 @@ public class CharacterStats : MonoBehaviour
     public int CalculatedMaxHealth()
     {
         return maxHealth.GetValue();
+    }
+    
+    public int CalculatedMaxActionPoint()
+    {
+        return actionPoint.GetBaseValue();
     }
     #endregion
 

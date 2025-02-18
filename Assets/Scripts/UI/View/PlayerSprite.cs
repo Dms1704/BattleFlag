@@ -20,6 +20,9 @@ public class CharacterSpriteUI : MonoBehaviour
     public void UpdateSprite(Sprite playerImage, Sprite mainWeaponImage, Sprite deputyWeaponImage, bool bRotation)
     {
         this.playerImage.sprite = playerImage;
+        Color color = this.mainWeaponImage.color;
+        color.a = !mainWeaponImage ? 0 : 1;
+        this.mainWeaponImage.color = color;
         this.mainWeaponImage.sprite = mainWeaponImage;
         this.mainWeaponImage.transform.rotation = bRotation ? Quaternion.Euler(0, 0, 90) : Quaternion.Euler(0, 0, 0);
         // this.deputyWeaponImage.sprite = deputyWeaponImage;

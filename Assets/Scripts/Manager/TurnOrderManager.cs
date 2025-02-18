@@ -26,6 +26,11 @@ public class TurnOrderManager : MonoBehaviour
         }
     }
 
+    public void RemoveSortListEntity(Entity entity)
+    {
+        sortedEntityList.Remove(entity);
+    }
+
     public Entity GetCurrentEntity()
     {
         if (sortedEntityList == null || sortedEntityList.Count == 0)
@@ -55,6 +60,7 @@ public class TurnOrderManager : MonoBehaviour
         
         Debug.Log("轮到" + sortedEntityList[index].name);
         Entity entity = sortedEntityList[index];
+        UI.instance.UpdateUI(entity);
         entity.OnOperateOverChanged += EndOperate;
         entity.Operate();
     }
@@ -79,6 +85,10 @@ public class TurnOrderManager : MonoBehaviour
         
         // 根据速度排序角色列表
         sortedEntityList = BoardManager.instance.GetEntities().OrderByDescending(e => e.stats.velocity.GetValue()).ToList();
+        for (int i = 0; i < sortedEntityList.Count; i++)
+        {
+            sortedEntityList[i].stats.RecoveryActionPoint();
+        }
         StartNextOperate();
     }
 }

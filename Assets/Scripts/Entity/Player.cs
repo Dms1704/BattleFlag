@@ -4,6 +4,7 @@ using Models;
 using Prefabs;
 using Sylves;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player : Entity
 {
@@ -24,6 +25,8 @@ public class Player : Entity
     private SkillManager skillManager;
     private List<Entity> enemies = new List<Entity>();
     
+    // 事件
+    
     protected override void Start()
     {
         base.Start();
@@ -41,6 +44,10 @@ public class Player : Entity
             // 移动判定
             if (Input.GetKeyDown(KeyCode.Mouse0) && !isBusy)
             {
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    return;
+                }
                 // 技能键按下
                 if (attackReady)
                 {
@@ -59,6 +66,10 @@ public class Player : Entity
             }
             else if (Input.GetMouseButtonDown(1) && !isBusy)
             {
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    return;
+                }
                 ClearFootprints();
                 board.ClearHexMasks();
                 attackReady = false;
@@ -172,7 +183,6 @@ public class Player : Entity
     public override void Operate()
     {
         base.Operate();
-        stats.RecoveryActionPoint();
         Debug.Log("轮到你了");
     }
 }
