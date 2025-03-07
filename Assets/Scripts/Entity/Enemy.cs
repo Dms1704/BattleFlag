@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    private Entity closestEntity;
+    
     protected override void Start()
     {
         base.Start();
@@ -13,6 +15,18 @@ public class Enemy : Entity
     protected override void Update()
     {
         base.Update();
+
+        if (isOperating)
+        {
+            closestEntity = HexGridUtil.FindClosestEntity(this);
+            
+            
+        }
+    }
+
+    private void MoveToPlayer()
+    {
+        
     }
 
     public override void Operate()

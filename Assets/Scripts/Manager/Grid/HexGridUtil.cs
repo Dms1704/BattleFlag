@@ -65,10 +65,7 @@ public class HexGridUtil : MonoBehaviour
         CellPath path = null;
         if (currentCell != null && !srcCell.Equals(currentCell.Value))
         {
-            // Debug.Log("终点目标：" + currentCell.Value);
             path = Pathfinding.FindPath(_grid, srcCell, currentCell.Value, IsAccessible);
-            // if (path != null)
-            //     Debug.Log(path.ToString());
         }
         
         bool IsAccessible(Cell cell)
@@ -121,6 +118,43 @@ public class HexGridUtil : MonoBehaviour
         }
        
         return allVecs;
+    }
+    #endregion
+
+    #region 距离和邻居
+    public static Entity FindClosestEntity(Entity entity)
+    {
+        Entity closest = null;
+        int scope = 10;
+        for (int i = -scope; i <= scope; i++)
+        {
+            for (int j = -scope; j <= scope; j++)
+            {
+                for (int k = -scope; k <= scope; k++)
+                {
+                    if (i == 0 && j == 0 && k == 0)
+                    {
+                        continue;
+                    }
+                    if (i + j + k == 0)
+                    {
+                        Vector3 point = entity.transform.TransformPoint(GetCellCenter(new Cell(i, j, k)));
+                        closest = BoardManager.instance.GetEntity(TilemapSingleton.instance.tilemap.WorldToCell(point));
+                        if (closest)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return closest;
+    }
+
+    public static int Distance(Entity a, Entity b)
+    {
+        
+        return 0;
     }
     #endregion
 }

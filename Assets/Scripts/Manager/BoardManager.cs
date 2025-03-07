@@ -210,7 +210,9 @@ public class BoardManager : MonoBehaviour
     {
         if (InUnityEditorMode)
         {
+            #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false; // 在Unity编辑器中结束运行
+            #endif
         }
         else
         {

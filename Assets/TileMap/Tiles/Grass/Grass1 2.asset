@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0686951e1f74e76b1b2cc9281e4665b, type: 3}
-  m_Name: Grass
+  m_Name: Grass1 2
   m_EditorClassIdentifier: 
-  tileSprite: {fileID: 161118602, guid: 98aa7d91b35f32947ae4cdbaa90ae1e0, type: 3}
+  tileSprite: {fileID: 54164770, guid: 98aa7d91b35f32947ae4cdbaa90ae1e0, type: 3}
   moveCost: 2
   defenseBonus: 0
   isWalkable: 1

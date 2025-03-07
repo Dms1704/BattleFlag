@@ -72,36 +72,36 @@ public class HexGridGenerator : MonoBehaviour
             {
                 if (grid.TryGetValue(new Vector3Int(x, y), out bool value))
                 {
-                    TileBase tile = value ? groundTile : GetGrassTileByLogic();
-                   ground.SetTile(new Vector3Int(x, y), tile);
+                    TileBase tile = GetGrassTileByLogic();
+                    ground.SetTile(new Vector3Int(x, y), tile);
                 }
             }
         }
         
         // 装饰
-        float weightTotal = 0;
-        for (int x = 0; x < terrainWeights.Count; x++)
-        {
-            weightTotal += terrainWeights[x].weight;
-        }
-        for (int x = -width; x < width; x++)
-        {
-            for (int y = -height; y < height; y++)
-            {
-                float randValue = Random.Range(1f, weightTotal);
-                float temp = 0;
-
-                for (int i = 0; i < terrainWeights.Count; i++)
-                {
-                    temp += terrainWeights[i].weight;
-                    if (randValue < temp)
-                    {
-                        decoration.SetTile(new Vector3Int(x, y), terrainWeights[i].tile);
-                        break;
-                    }
-                }
-            }
-        }
+        // float weightTotal = 0;
+        // for (int x = 0; x < terrainWeights.Count; x++)
+        // {
+        //     weightTotal += terrainWeights[x].weight;
+        // }
+        // for (int x = -width; x < width; x++)
+        // {
+        //     for (int y = -height; y < height; y++)
+        //     {
+        //         float randValue = Random.Range(1f, weightTotal);
+        //         float temp = 0;
+        //
+        //         for (int i = 0; i < terrainWeights.Count; i++)
+        //         {
+        //             temp += terrainWeights[i].weight;
+        //             if (randValue < temp)
+        //             {
+        //                 decoration.SetTile(new Vector3Int(x, y), terrainWeights[i].tile);
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     public void CleanHexGrid()
