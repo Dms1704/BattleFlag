@@ -13,3 +13,7 @@
 
 https://www.bilibili.com/video/BV1tuA8eFEgf
 
+## 提示
+
+请从patch分支拉取稳定代码
+
