@@ -4,41 +4,40 @@ using System.Collections.Generic;
 using Models;
 using States;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class Entity : MonoBehaviour
 {
-    [SerializeField] protected Vector2 knockbackDirection;
-    [SerializeField] protected float knockbackDuration;
-    
+    // Unity数据
     [Header("移动速度")]
     [SerializeField] protected float moveSpeed;
+    [FormerlySerializedAs("knockbackSpeed")]
+    [Header("受击和闪躲")]
+    [SerializeField] protected float SmilingMovementSpeed;
+    [SerializeField] protected float SmilingMovementOffset;
 
-    protected bool isKnocked;
+    // 数据
     protected bool isBusy;
     public bool isOperating;
-
-    //朝向
-    public int facingDir { get; private set; } = 1;
-    protected bool facingRight = true;
+    protected IList<MoveStepLO> moveStepLos;
+    public int faceRight = 1;
+    public bool isAlly = true;
     
-    public Action onFliped;
-    public Action onOperate;
-    /**
-     * 操作完成后执行的事件
-     */
+    // 数据接口（能力组件）
+    public IEquippable equipment { get; private set; }
+    
+    // 事件
     public event Action OnOperateOverChanged;
-
-    public string lastAnimBoolName { get; private set; }
+    public event Action OnInitialized;
     
-    #region 状态
+    // 状态
     protected EntityStateMachine stateMachine { get; private set; }
     public EntityIdleState idleState { get; private set; }
     public EntityMoveState moveState { get; private set; }
     public EntityAttackState attackState { get; private set; }
-    #endregion
 
-    #region 组件
+    // 组件
     public Animator animator { get; private set; }
     public Rigidbody2D rb { get; private set; }
     public EntityFX fx { get; private set; }
@@ -47,11 +46,16 @@ public class Entity : MonoBehaviour
     public CapsuleCollider2D cd { get; private set; }
     public Tilemap tilemap { get; private set; }
     public GameObject operatingCursor;
-    #endregion
-
-    public virtual void AssignLastAnimName(string lastAnimBoolName)
+    public GameObject mainWeapon;
+    public GameObject chessBase;
+    [HideInInspector] public SpriteRenderer mainWeaponSr;
+    [HideInInspector] public SpriteRenderer playerSpriteSr;
+    [HideInInspector] public SpriteRenderer chessBaseSpriteSr;
+    
+    private void Initialize()
     {
-        this.lastAnimBoolName = lastAnimBoolName;
+        // 初始化逻辑...
+        OnInitialized?.Invoke(); // 触发事件
     }
 
     protected virtual void Awake()
@@ -70,23 +74,83 @@ public class Entity : MonoBehaviour
         sr = GetComponentInChildren<SpriteRenderer>();
         stats = GetComponent<CharacterStats>();
         cd = GetComponent<CapsuleCollider2D>();
-        tilemap = SingletonManager.instance.tilemap;
+        tilemap = TilemapSingleton.instance.tilemap;
+        mainWeaponSr = mainWeapon.GetComponent<SpriteRenderer>();
+        playerSpriteSr = animator.gameObject.GetComponent<SpriteRenderer>();
+        chessBaseSpriteSr = chessBase.GetComponent<SpriteRenderer>();
+
+        equipment = new EquippableImpl();
         
-        TurnOrderManager.instance.AddEntity(this);
+        BoardManager.instance.AddEntity(this);
+        
+        OnInitialized += BoardManager.instance.HandleCharacterInitialized;
+        Initialize();
         
         stateMachine.Initialize(idleState);
     }
-
+    
     protected virtual void Update()
     {
         stateMachine.currentState.Update();
+
+        UpdateSprite();
+    }
+
+    private void UpdateSprite()
+    {
+        if (CanEquip() && equipment.IsDirty())
+        {
+            ItemEquipmentData mainEquipment = equipment.GetEquipment(EquipmentType.MainWeapon);
+            mainWeaponSr.sprite = !mainEquipment ? null : mainEquipment.icon;
+            equipment.Clean();
+        }
+    }
+
+    public void ClearMoveSteps()
+    {
+        moveStepLos.Clear();
+    }
+    
+    public IEnumerator AttackAndDash()
+    {
+        isBusy = true;
+        yield return Knockback(transform.position, transform.position + new Vector3((float)(faceRight * SmilingMovementOffset * 0.4), 0, 0), transform);
+        yield return Knockback(transform.position, transform.position + new Vector3((float)(-faceRight * SmilingMovementOffset * 0.4), 0, 0), transform);
+        isBusy = false;
+    }
+    
+    public IEnumerator KnockbackAndBack()
+    {
+        isBusy = true;
+        yield return Knockback(transform.position, transform.position + new Vector3(-faceRight * SmilingMovementOffset, 0, 0), transform);
+        yield return Knockback(transform.position, transform.position + new Vector3(faceRight * SmilingMovementOffset, 0, 0), transform);
+        isBusy = false;
+    }
+
+    public IEnumerator Knockback(Vector3 src, Vector3 dst, Transform moveTarget)
+    {
+        Vector3 currentPos = src;
+        float distance = Vector3.Distance(src, dst);
+        float timeToMove = distance / SmilingMovementSpeed;
+        for (float t = 0; t < timeToMove; t += Time.deltaTime)
+        {
+            // 计算插值位置
+            currentPos = Vector3.Lerp(moveTarget.position, dst, t / timeToMove);
+ 
+            // 设置对象位置
+            moveTarget.position = currentPos;
+ 
+            // 等待下一帧
+            yield return null;
+        }
+        moveTarget.position = dst;
     }
 
     public delegate void MoveOver();
     public IEnumerator MoveSequentially(IList<MoveStepLO> moveSteps, MoveOver moveOver)
     {
         isBusy = true;
-        moveSteps.Insert(0, new MoveStepLO(rb.position, 0));
+        moveSteps.Insert(0, new MoveStepLO(transform.position, 0));
         for (int i = 0; i < moveSteps.Count - 1; i++)
         {
             yield return MoveToPosition(moveSteps[i], moveSteps[i + 1]);
@@ -106,92 +170,15 @@ public class Entity : MonoBehaviour
             currentPos = Vector3.Lerp(srcStep.targetPos, targetStep.targetPos, t / timeToMove);
  
             // 设置对象位置
-            rb.position = currentPos;
+            transform.position = currentPos;
  
             // 等待下一帧
             yield return null;
         }
         
-        rb.position = targetStep.targetPos;
+        transform.position = targetStep.targetPos;
         stats.CostActionPoint(targetStep.moveCost);
     }
-
-    public virtual void SlowEntityBy(float slowPercentage, float slowDuration)
-    {
-
-    }
-
-    public virtual void DamageImpact()
-    {
-        StartCoroutine("HitKnockback");
-    }
-
-    protected virtual IEnumerator HitKnockback()
-    {
-        isKnocked = true;
-
-        rb.velocity = new Vector2(knockbackDirection.x * -facingDir, knockbackDirection.y);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        isKnocked = false;
-    }
-
-    #region 速度
-    public void SetZeroVelocity()
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(0, 0); 
-    }
-
-    public void SetVelocity(float xInput, float yInput)
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(xInput, yInput);
-    }
-
-    public void SetVelocityAndFlip(float xInput, float yInput)
-    {
-        if (isKnocked)
-            return;
-
-        rb.velocity = new Vector2(xInput, yInput);
-        FlipController(xInput);
-    }
-    #endregion
-
-    #region 翻转
-    public virtual void Flip()
-    {
-        if (isKnocked)
-        {
-            return;
-        }
-
-        facingDir = facingDir * -1;
-        facingRight = !facingRight;
-        transform.localRotation = facingRight ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-        //transform.Rotate(0, 180, 0);
-
-        onFliped?.Invoke();
-    }
-
-    public virtual void FlipController(float _x)
-    {
-        if (_x > 0 && !facingRight)
-        {
-            Flip();
-        }
-        else if (_x < 0 && facingRight)
-        {
-            Flip();
-        }
-    }
-    #endregion
 
     #region 网格对齐
     public void SetPositionUseOddQ(Vector3Int oddQVector)
@@ -212,6 +199,24 @@ public class Entity : MonoBehaviour
 
     public virtual void Die()
     {
+        Destroy(gameObject);
+        TurnOrderManager.instance.RemoveSortListEntity(this);
+        BoardManager.instance.RemoveEntity(this);
+        
+        int winOrLose = BoardManager.instance.WinOrLose();
+        if (winOrLose == 0)
+        {
+            return;
+        }
+        if (winOrLose == 1)
+        {
+            UI.instance.WinOrLose(true);
+            return;
+        }
+        if (winOrLose == 2)
+        {
+            UI.instance.WinOrLose(false);
+        }
     }
     
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
@@ -230,7 +235,6 @@ public class Entity : MonoBehaviour
     public virtual void Operate()
     {
         isOperating = true;
-        Debug.Log("启用");
         operatingCursor.SetActive(true);
     }
 
@@ -245,5 +249,15 @@ public class Entity : MonoBehaviour
     public virtual void ClearFootprints()
     {
         
+    }
+
+    public Vector3Int GetGridPosition()
+    {
+        return HexGridUtil.IgnoreZ(tilemap.WorldToCell(transform.position));
+    }
+
+    public bool CanEquip()
+    {
+        return equipment != null;
     }
 }

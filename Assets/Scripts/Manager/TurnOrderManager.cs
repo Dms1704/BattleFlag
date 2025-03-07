@@ -5,13 +5,13 @@ using UnityEngine;
 public class TurnOrderManager : MonoBehaviour
 {
     public static TurnOrderManager instance;
-    private List<Entity> entityList = new();
     private List<Entity> sortedEntityList;
 
     // 当前操作的角色下标
     private int index = 0;
     
     // 回合次数
+    private bool started = false;
     private int turnOrder = 0;
     
     void Awake()
@@ -26,10 +26,18 @@ public class TurnOrderManager : MonoBehaviour
         }
     }
 
-    // 添加角色到行动队列
-    public void AddEntity(Entity entity)
+    public void RemoveSortListEntity(Entity entity)
     {
-        entityList.Add(entity);
+        sortedEntityList.Remove(entity);
+    }
+
+    public Entity GetCurrentEntity()
+    {
+        if (sortedEntityList == null || sortedEntityList.Count == 0)
+        {
+            return null;
+        }
+        return sortedEntityList[index];
     }
     
     public void EndOperate()
@@ -44,13 +52,15 @@ public class TurnOrderManager : MonoBehaviour
 
     public void StartNextOperate()
     {
-        if (index >= entityList.Count)
+        if (index >= sortedEntityList.Count)
         {
-            StartTurn();
+            StartTurnWithIn();
             return;
         }
         
+        Debug.Log("轮到" + sortedEntityList[index].name);
         Entity entity = sortedEntityList[index];
+        UI.instance.UpdateUI(entity);
         entity.OnOperateOverChanged += EndOperate;
         entity.Operate();
     }
@@ -58,12 +68,27 @@ public class TurnOrderManager : MonoBehaviour
     // 开始一个新的回合
     public void StartTurn()
     {
+        if (started)
+        {
+            return;
+        }
+
+        StartTurnWithIn();
+    }
+
+    private void StartTurnWithIn()
+    {
+        started = true;
         Debug.Log("回合次数：" + turnOrder);
         turnOrder++;
         index = 0;
         
         // 根据速度排序角色列表
-        sortedEntityList = entityList.OrderByDescending(e => e.stats.velocity.GetValue()).ToList();
+        sortedEntityList = BoardManager.instance.GetEntities().OrderByDescending(e => e.stats.velocity.GetValue()).ToList();
+        for (int i = 0; i < sortedEntityList.Count; i++)
+        {
+            sortedEntityList[i].stats.RecoveryActionPoint();
+        }
         StartNextOperate();
     }
 }
