@@ -12,6 +12,33 @@
 /dataSources/
 /dataSources.local.xml
 
-/Packages/
 /Temp
 /UserSettings
+# Unity generated
+/Library
+/Logs
+/*.csproj
+/*.sln
+/Recordings
+# VS junk
+.vs
+.vsconfig
+obj
+obj.meta
+UI.meta
+TileSet.meta
+bin
+/Build
+**/xdoc4
+
+# Don't include source assets
+*.blend
+*.blend.meta
+*.blend1
+*.blend1.meta
+*.xcf
+*.xcf.meta
+
+# Don't include packages, the user can fetch these themselves.
+
+kenneyDungeonPack_2.3*
